@@ -1,0 +1,65 @@
+<html>
+
+<head>
+    <title>Html-Qrcode Demo</title>
+
+<body>
+    <div id="qr-reader" style="width:500px"></div>
+    <table>
+        <tr>
+            <th>scanned at</th>
+            <th>trap ID</th>
+        </tr>
+        <tr>
+            <td>
+                <table id="qr-reader-results-date"></table>
+            </td>
+            <td>
+                <table id="qr-reader-results-trapid"></table>
+            </td>
+        </tr>
+    </table>
+</body>
+<script src="html5-qrcode.min.js"></script>
+<script>
+    function docReady(fn) {
+        // see if DOM is already available
+        if (document.readyState === "complete"
+            || document.readyState === "interactive") {
+            // call on next available tick
+            setTimeout(fn, 1);
+        } else {
+            document.addEventListener("DOMContentLoaded", fn);
+        }
+    }
+
+    docReady(function () {
+        var resultContainerDate = document.getElementById('qr-reader-results-date');
+        var resultContainerTrapid = document.getElementById('qr-reader-results-trapid');
+        var lastResult, countResults = 0;
+        function onScanSuccess(decodedText, decodedResult) {
+            if (decodedText !== lastResult) {
+                ++countResults;
+                lastResult = decodedText;
+                // Handle on success condition with the decoded message.
+                console.log(`Scan result ${decodedText}`, decodedResult);
+                let now = new Date().toISOString()
+
+                var row = resultContainerDate.insertRow(-1);
+                var cell1 = row.insertCell(0);
+                cell1.innerHTML = now;
+
+                row = resultContainerTrapid.insertRow(-1);
+                var cell2 = row.insertCell(0);
+                cell2.innerHTML = decodedText;
+            }
+        }
+
+        var html5QrcodeScanner = new Html5QrcodeScanner(
+            "qr-reader", { fps: 10, qrbox: 250 });
+        html5QrcodeScanner.render(onScanSuccess);
+    });
+</script>
+</head>
+
+</html>
